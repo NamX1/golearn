@@ -75,7 +75,3 @@ A minimal HTTP client demonstrating:
 ```
 module github.com/NamX1/golearn
 ```
-
-## License
-
-_Add a license here if you'd like this repo to be reusable by others (e.g. MIT)._
