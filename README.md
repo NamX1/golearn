@@ -51,7 +51,7 @@ go run ./stdlib/net/http/client
 | `basics/control-flow` | ✅ | if/else, switch, for, range, nested loops |
 | `data-structures/slices` | 🚧 | Slices |
 | `data-structures/maps` | 🚧 | Maps |
-| `data-structures/structs` | 🚧 | Structs and methods |
+| `data-structures/structs` | ✅ | Structs, literals, zero values, copy semantics, comparability |
 | `interfaces-and-errors/interfaces` | 🚧 | Interfaces |
 | `interfaces-and-errors/error-handling` | 🚧 | Wrapping and inspecting errors |
 | `interfaces-and-errors/custom-errors` | 🚧 | Custom error types |
@@ -131,6 +131,80 @@ Small fine
 2 Ghost In The Wire
 3 Atomic Habits
 ```
+
+### `data-structures/structs`
+
+The `Book`, `Member` and `Shelf` types, covering:
+
+- Exported (`Title`) vs unexported (`tags`) fields
+- Named vs positional struct literals, and why positional is a trap
+- The zero value: every field blank without any constructor
+- Nested structs, and slices of structs
+- **Copy semantics**: assignment copies the entire struct
+- **Comparability**: `==` only works if every field is itself comparable
+
+Methods and pointer receivers are deliberately *not* covered yet — see the tasks
+below.
+
+#### Tasks
+
+Work through these in order. For the two marked **predict first**, write down what
+you think the output will be *before* running it.
+
+1. **Named literal.** Write a function `NewArrival(title, author string, copies int) Book`
+   that returns a `Book` built with a named literal. Have it return
+   `"The Go Programming Language"`, `"Donovan and Kernighan"`, 3 copies. Print
+   the `Title`, `Author` and `Copies`.
+
+2. **Zero value.** Declare `var draft Book` without assigning anything. Print it
+   with `%+v` and confirm every field is blank, including the `[]string`.
+
+3. **Copy semantics — predict first.**
+
+   ```go
+   a := Book{Title: "Dune", Copies: 1}
+   b := a
+   b.Copies = 5
+   fmt.Println(a.Copies, b.Copies)
+   ```
+
+   Write down your prediction. It is `1 5`, not `5 5`. Then explain in one
+   sentence why.
+
+4. **The range trap — predict first.** Take one copy off every book in a
+   `[]Book`. The obvious version silently does nothing:
+
+   ```go
+   for _, b := range books {
+       b.Copies--
+   }
+   ```
+
+   Predict whether `books` changes. Then fix it, and explain in one sentence why
+   the broken version fails. **This is the one that matters** — the loop runs,
+   nothing errors, and the data is just wrong.
+
+5. **Comparability.** `Book` has an unexported `tags []string` field, so
+   `bookA == bookB` is a compile error. Remove the field, then write one line
+   comparing two `Book` values and print the result.
+
+6. **Stretch — your first method.** Give `Book` a method with a **pointer**
+   receiver:
+
+   ```go
+   func (b *Book) Borrow() error {
+       if b.Copies == 0 {
+           return errors.New("no copies available")
+       }
+       b.Copies--
+       b.OnLoan = true
+       return nil
+   }
+   ```
+
+   Call it from a function in `main`, not from `main` itself. Then rewrite it
+   with a **value** receiver and watch `b.Copies--` stop having any effect.
+   That contrast is the whole point of Part 2.
 
 ### `stdlib/net/http/server`
 
