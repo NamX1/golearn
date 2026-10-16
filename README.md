@@ -1,6 +1,6 @@
 # golearn
 
-A personal repository for learning Go (Golang), one topic at a time. Each folder is a self-contained, runnable example focused on a single concept.
+A personal repository for learning Go, one topic at a time. Each folder is a self-contained, runnable example built around a single concept, and they all share one running example: a small lending library.
 
 ## Getting Started
 
@@ -14,61 +14,113 @@ Every topic lives in its own folder with a `main.go`. Run any example directly w
 
 ```sh
 go run ./basics/hello-world
-go run ./networking/http-server
+go run ./basics/variables-and-types
+go run ./stdlib/net/http/server
 ```
 
-Some examples are designed to work together. For instance, the HTTP server and client:
+Some examples are designed to work together. For instance, the catalogue server and its client:
 
 ```sh
 # terminal 1 — start the server
-go run ./networking/http-server
+go run ./stdlib/net/http/server
 
 # terminal 2 — call it with the client
-go run ./networking/http-client
+go run ./stdlib/net/http/client
 ```
 
-## Structure
+## Layout
+
+| Path | Purpose |
+|---|---|
+| `basics/` | The language itself: syntax, types, control flow |
+| `data-structures/` | The built-in composite types |
+| `interfaces-and-errors/` | Behaviour and failure |
+| `concurrency/` | Goroutines, channels, and synchronisation |
+| `stdlib/` | One folder per standard-library area, mirroring the real import path |
+| `projects/` | Larger programs that combine several topics |
+
+`stdlib/` paths deliberately match Go's own package paths, so `stdlib/net/http/server` is the server built from `net/http`.
+
+## Progress
 
 | Topic | Status | Description |
 |---|---|---|
 | `basics/hello-world` | ✅ | The classic first Go program |
-| `basics/variables` | ✅ | Declaring variables and basic types |
-| `basics/functions` | ✅ | Defining and calling functions |
-| `basics/control-flow` | 🚧 | if/else, switch, loops |
+| `basics/variables-and-types` | ✅ | Every basic type, `var` / `:=` / `const`, zero values |
+| `basics/functions` | ✅ | Parameters and multiple return values |
+| `basics/control-flow` | ✅ | if/else, switch, for, range, nested loops |
 | `data-structures/slices` | 🚧 | Slices |
 | `data-structures/maps` | 🚧 | Maps |
-| `data-structures/structs` | 🚧 | Structs |
+| `data-structures/structs` | 🚧 | Structs and methods |
 | `interfaces-and-errors/interfaces` | 🚧 | Interfaces |
-| `interfaces-and-errors/error-handling` | 🚧 | Error handling patterns |
+| `interfaces-and-errors/error-handling` | 🚧 | Wrapping and inspecting errors |
 | `interfaces-and-errors/custom-errors` | 🚧 | Custom error types |
 | `concurrency/goroutines` | 🚧 | Goroutines |
 | `concurrency/channels` | 🚧 | Channels |
 | `concurrency/waitgroups` | 🚧 | `sync.WaitGroup` |
-| `networking/http-server` | ✅ | Basic HTTP server: routing, JSON responses, graceful timeouts |
-| `networking/http-client` | ✅ | Basic HTTP client: requests, JSON decoding, error handling |
+| `stdlib/net/http/server` | ✅ | Routing, JSON responses, mandatory timeouts |
+| `stdlib/net/http/client` | ✅ | Requests, JSON decoding, error wrapping |
 | `projects` | 🚧 | Larger, combined projects |
 
 ✅ implemented &nbsp;&nbsp; 🚧 planned / in progress
 
+## Conventions used throughout
+
+- Functions that only produce output are named `printSomething`; functions that
+  return a value are named without a `get` prefix.
+- Example data is always library data: members, books, shelves, fines.
+- A comment marked `BUG, now fixed` records a mistake that was actually made,
+  what it did, and why the fix works. They are kept rather than deleted so the
+  next reader can recognise the same trap.
+
 ## Highlights
 
-### `networking/http-server`
+### `basics/control-flow`
 
-A minimal HTTP server built with the standard library `net/http` package, demonstrating:
+Covering if/else, an error-returning `if`, tagged and tagless `switch`, the
+three-clause `for`, `range` over a slice, and a nested loop over a slice of
+slices.
+
+It also keeps a written record of the bugs it went through, marked in place as
+`BUG, now fixed`. Worth reading, because three of them failed *quietly* rather
+than loudly:
+
+- A `for` loop using `i == shelves` instead of `<=`. Go tests the condition
+  before the first iteration, and `i` starts at `0`, so the body never ran even
+  once. A dead loop, not an infinite one — nothing hung, the output was just
+  missing.
+- A `switch` whose cases overlapped (`days <= 30` and `days >= 30`), so day 30
+  matched twice and `default` was unreachable. Moving the last case to `>= 90`
+  fixed the overlap but opened a hole: days 31-89 matched nothing and reported
+  "Invalid date".
+- A nested loop printing the shelf number from a function parameter instead of
+  the outer loop's index, so every book came out labelled with the same shelf.
+
+The rule behind all three: make the branches cover every input, and check that
+the value you're printing is the one that actually varies.
+
+### `stdlib/net/http/server`
+
+A minimal catalogue server built on the standard `net/http` package:
 
 - Routing with `http.ServeMux`
-- Plain text and JSON responses
-- Configuring `http.Server` with read/write timeouts
-- Graceful handling of `http.ErrServerClosed`
+- Plain-text and JSON responses, via struct tags
+- `http.Server` with read and write timeouts
+- The `errors.Is(err, http.ErrServerClosed)` filter
 
-### `networking/http-client`
+Graceful shutdown is **not** implemented yet — nothing calls `server.Shutdown`,
+so the `ErrServerClosed` branch is there to show the correct shape before the
+`concurrency/` topics land.
 
-A minimal HTTP client demonstrating:
+### `stdlib/net/http/client`
 
-- Using `http.Client` with a timeout
-- Decoding JSON responses into structs
-- Wrapping errors with `fmt.Errorf` and `%w`
-- Separating request logic from presentation (a dedicated function does the work; `main` handles output)
+A minimal client for that server:
+
+- `http.Client` with a client-side timeout
+- Checking `resp.StatusCode` by hand, since `net/http` will not do it for you
+- Decoding JSON into a struct
+- Wrapping failures with `fmt.Errorf` and `%w`
+- Separating request logic from presentation: `fetchStatus` does the work, `main` does the printing
 
 ## Module
 

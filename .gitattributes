@@ -1,0 +1,9 @@
+# Normalize line endings so the working tree matches the LF blobs already in
+# the repo. Without this, core.autocrlf=true rewrites every .go file to CRLF on
+# checkout and `gofmt -l` reports the whole repo as unformatted.
+* text=auto
+
+*.go            text eol=lf
+*.md            text eol=lf
+*.mod           text eol=lf
+.gitattributes  text eol=lf
