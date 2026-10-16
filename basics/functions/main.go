@@ -1,8 +1,13 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
+
+// section prints a heading so consecutive demos stay readable instead of
+// running together into one wall of lines.
+func section(title string) {
+	fmt.Println()
+	fmt.Println("== " + title + " ==")
+}
 
 // greetMember prints a welcome message. In `name string`, the name is the
 // parameter and string is its type.
@@ -20,8 +25,10 @@ func canBorrow(copiesLeft int) (bool, string) {
 }
 
 func main() {
+	section("greetMember")
 	greetMember("NamX1")
 
+	section("canBorrow")
 	// Two return values are assigned with the usual = or :=.
 	allowed, reason := canBorrow(0)
 	fmt.Println(allowed, reason)

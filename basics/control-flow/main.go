@@ -5,6 +5,13 @@ import (
 	"fmt"
 )
 
+// section prints a heading so consecutive demos stay readable instead of
+// running together into one wall of lines.
+func section(title string) {
+	fmt.Println()
+	fmt.Println("== " + title + " ==")
+}
+
 // printCardType shows which membership card a member qualifies for.
 func printCardType(age int) {
 	if age >= 18 {
@@ -61,7 +68,7 @@ func printOverdueFine(days int) {
 // init, condition, post. Shelf numbers are 1-based, so the counter starts at 1.
 func printShelfNumbers(shelves int) {
 	for shelf := 1; shelf <= shelves; shelf++ {
-		fmt.Printf("Shelf number %d\n", shelf)
+		fmt.Println(shelf)
 	}
 }
 
@@ -96,11 +103,22 @@ func printBooksByShelf() {
 }
 
 func main() {
+	section("Card type")
 	printCardType(15)
+
+	section("Membership status")
 	printMembershipStatus("Active")
+
+	section("Overdue fine")
 	printOverdueFine(2)
+
+	section("Shelf numbers")
 	printShelfNumbers(5)
+
+	section("Book titles")
 	printBookTitles()
+
+	section("Books by shelf")
 	printBooksByShelf()
 
 	// reserveCopy returns an error nothing inspects yet. See interfaces-and-errors.

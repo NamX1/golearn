@@ -69,9 +69,12 @@ go run ./stdlib/net/http/client
 - Functions that only produce output are named `printSomething`; functions that
   return a value are named without a `get` prefix.
 - Example data is always library data: members, books, shelves, fines.
-- A comment marked `BUG, now fixed` records a mistake that was actually made,
-  what it did, and why the fix works. They are kept rather than deleted so the
-  next reader can recognise the same trap.
+- Each example carries a small `section(title)` helper that prints an
+  `== Title ==` heading before every demo, so grouped output stays readable
+  instead of running together into one wall of lines.
+- Mistakes made while writing an example are recorded in the Highlights section
+  below rather than left as comments in the code, so the code reads as a
+  finished example while the reasoning stays discoverable.
 
 ## Highlights
 
@@ -98,6 +101,36 @@ than loudly:
 
 The rule behind all three: make the branches cover every input, and check that
 the value you're printing is the one that actually varies.
+
+```
+$ go run ./basics/control-flow
+
+== Card type ==
+Teen Card
+
+== Membership status ==
+Welcome back!
+
+== Overdue fine ==
+Small fine
+
+== Shelf numbers ==
+1
+2
+3
+4
+5
+
+== Book titles ==
+0 Ghost in the wires
+1 Psychology of money
+2 White nights
+
+== Books by shelf ==
+1 White Night
+2 Ghost In The Wire
+3 Atomic Habits
+```
 
 ### `stdlib/net/http/server`
 
@@ -127,3 +160,7 @@ A minimal client for that server:
 ```
 module github.com/NamX1/golearn
 ```
+
+## License
+
+MIT. See [LICENSE](LICENSE).
