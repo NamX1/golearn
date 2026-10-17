@@ -51,7 +51,7 @@ go run ./stdlib/net/http/client
 | `basics/control-flow` | ✅ | if/else, switch, for, range, nested loops |
 | `data-structures/slices` | 🚧 | Slices |
 | `data-structures/maps` | 🚧 | Maps |
-| `data-structures/structs` | ✅ | Structs, literals, zero values, copy semantics, comparability |
+| `data-structures/structs` | 🚧 | Structs, literals, zero values, copy semantics, comparability |
 | `interfaces-and-errors/interfaces` | 🚧 | Interfaces |
 | `interfaces-and-errors/error-handling` | 🚧 | Wrapping and inspecting errors |
 | `interfaces-and-errors/custom-errors` | 🚧 | Custom error types |
@@ -134,7 +134,11 @@ Small fine
 
 ### `data-structures/structs`
 
-The `Book`, `Member` and `Shelf` types, covering:
+Not written yet. This is the next topic on the list, and the tasks below are the
+brief. Structure it as a single `main.go`, following the conventions above: a
+`section` helper, library data, one short doc comment per function.
+
+Build `Book`, `Member` and `Shelf` types and use them to show:
 
 - Exported (`Title`) vs unexported (`tags`) fields
 - Named vs positional struct literals, and why positional is a trap
@@ -143,8 +147,7 @@ The `Book`, `Member` and `Shelf` types, covering:
 - **Copy semantics**: assignment copies the entire struct
 - **Comparability**: `==` only works if every field is itself comparable
 
-Methods and pointer receivers are deliberately *not* covered yet — see the tasks
-below.
+Methods and pointer receivers come after this, in part 2.
 
 #### Tasks
 
@@ -188,23 +191,14 @@ you think the output will be *before* running it.
    `bookA == bookB` is a compile error. Remove the field, then write one line
    comparing two `Book` values and print the result.
 
-6. **Stretch — your first method.** Give `Book` a method with a **pointer**
-   receiver:
+6. **Stretch — your first method.** Give `Book` a `Borrow()` method that
+   refuses when `Copies` is 0, otherwise decrements `Copies` and sets
+   `OnLoan`. Write it with a **pointer** receiver, and call it from a function
+   in `main` rather than from `main` itself.
 
-   ```go
-   func (b *Book) Borrow() error {
-       if b.Copies == 0 {
-           return errors.New("no copies available")
-       }
-       b.Copies--
-       b.OnLoan = true
-       return nil
-   }
-   ```
-
-   Call it from a function in `main`, not from `main` itself. Then rewrite it
-   with a **value** receiver and watch `b.Copies--` stop having any effect.
-   That contrast is the whole point of Part 2.
+   Then rewrite it with a **value** receiver and watch `b.Copies--` stop having
+   any effect on the original. That contrast is the whole point of part 2, so
+   do not skip it.
 
 ### `stdlib/net/http/server`
 
